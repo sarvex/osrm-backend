@@ -111,7 +111,7 @@ void readEdgeBasedGraph(const std::filesystem::path &path,
 
 // reads .osrm.nbg_nodes
 template <typename CoordinatesT, typename PackedOSMIDsT>
-inline void 
+inline void
 readNodes(const std::filesystem::path &path, CoordinatesT &coordinates, PackedOSMIDsT &osm_node_ids)
 {
     static_assert(std::is_same<typename CoordinatesT::value_type, util::Coordinate>::value, "");
@@ -492,8 +492,8 @@ void readEdgeBasedNodeWeights(const std::filesystem::path &path, NodeWeightsVect
     storage::serialization::read(reader, "/extractor/edge_based_node_weights", weights);
 }
 
-template <typename NodeDistancesVectorT> void readEdgeBasedNodeDistances(const std::filesystem::path &path,
-                                NodeDistancesVectorT &distances)
+template <typename NodeDistancesVectorT>
+void readEdgeBasedNodeDistances(const std::filesystem::path &path, NodeDistancesVectorT &distances)
 {
     const auto fingerprint = storage::tar::FileReader::VerifyFingerprint;
     storage::tar::FileReader reader{path, fingerprint};
