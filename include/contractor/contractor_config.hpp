@@ -31,9 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "storage/io_config.hpp"
 #include "updater/updater_config.hpp"
 
-#include <boost/filesystem/path.hpp>
-
 #include <string>
+#include <filesystem>
 
 namespace osrm
 {
@@ -49,7 +48,7 @@ struct ContractorConfig final : storage::IOConfig
     }
 
     // Infer the output names from the path of the .osrm file
-    void UseDefaultOutputNames(const boost::filesystem::path &base)
+    void UseDefaultOutputNames(const std::filesystem::path &base)
     {
         IOConfig::UseDefaultOutputNames(base);
         updater_config.UseDefaultOutputNames(base);
