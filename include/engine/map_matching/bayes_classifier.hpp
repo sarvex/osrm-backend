@@ -25,7 +25,7 @@ struct NormalDistribution
     double Density(const double val) const
     {
         const double x = val - mean;
-        return 1.0 / (std::sqrt(std::atan(1.)*8) * standard_deviation) *
+        return 1.0 / (std::sqrt(std::atan(1.) * 8) * standard_deviation) *
                std::exp(-x * x / (standard_deviation * standard_deviation));
     }
 

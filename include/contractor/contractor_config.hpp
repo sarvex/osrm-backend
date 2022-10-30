@@ -31,8 +31,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "storage/io_config.hpp"
 #include "updater/updater_config.hpp"
 
-#include <string>
 #include <filesystem>
+#include <string>
 
 namespace osrm
 {

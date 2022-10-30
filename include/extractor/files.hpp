@@ -58,8 +58,7 @@ inline void readIntersections(const std::filesystem::path &path,
 }
 
 // reads .osrm.properties
-inline void readProfileProperties(const std::filesystem::path &path,
-                                  ProfileProperties &properties)
+inline void readProfileProperties(const std::filesystem::path &path, ProfileProperties &properties)
 {
     const auto fingerprint = storage::tar::FileReader::VerifyFingerprint;
     storage::tar::FileReader reader{path, fingerprint};
@@ -112,9 +111,8 @@ void readEdgeBasedGraph(const std::filesystem::path &path,
 
 // reads .osrm.nbg_nodes
 template <typename CoordinatesT, typename PackedOSMIDsT>
-inline void readNodes(const std::filesystem::path &path,
-                      CoordinatesT &coordinates,
-                      PackedOSMIDsT &osm_node_ids)
+inline void 
+readNodes(const std::filesystem::path &path, CoordinatesT &coordinates, PackedOSMIDsT &osm_node_ids)
 {
     static_assert(std::is_same<typename CoordinatesT::value_type, util::Coordinate>::value, "");
     static_assert(std::is_same<typename PackedOSMIDsT::value_type, OSMNodeID>::value, "");
@@ -164,8 +162,7 @@ inline void readNBGMapping(const std::filesystem::path &path, std::vector<NBGToE
 }
 
 // writes .osrm.cnbg_to_ebg
-inline void writeNBGMapping(const std::filesystem::path &path,
-                            const std::vector<NBGToEBG> &mapping)
+inline void writeNBGMapping(const std::filesystem::path &path, const std::vector<NBGToEBG> &mapping)
 {
     const auto fingerprint = storage::tar::FileWriter::GenerateFingerprint;
     storage::tar::FileWriter writer{path, fingerprint};
@@ -469,8 +466,7 @@ void readRawNBGraph(const std::filesystem::path &path,
     storage::serialization::read(reader, "/extractor/edges", edge_list);
 }
 
-template <typename NameTableT>
-void readNames(const std::filesystem::path &path, NameTableT &table)
+template <typename NameTableT> void readNames(const std::filesystem::path &path, NameTableT &table)
 {
     const auto fingerprint = storage::tar::FileReader::VerifyFingerprint;
     storage::tar::FileReader reader{path, fingerprint};
@@ -496,8 +492,7 @@ void readEdgeBasedNodeWeights(const std::filesystem::path &path, NodeWeightsVect
     storage::serialization::read(reader, "/extractor/edge_based_node_weights", weights);
 }
 
-template <typename NodeDistancesVectorT>
-void readEdgeBasedNodeDistances(const std::filesystem::path &path,
+template <typename NodeDistancesVectorT> void readEdgeBasedNodeDistances(const std::filesystem::path &path,
                                 NodeDistancesVectorT &distances)
 {
     const auto fingerprint = storage::tar::FileReader::VerifyFingerprint;
