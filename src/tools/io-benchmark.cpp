@@ -13,9 +13,9 @@
 #include <algorithm>
 #include <chrono>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <numeric>
-#include <fstream>
 #include <random>
 #include <vector>
 
