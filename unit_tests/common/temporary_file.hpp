@@ -24,8 +24,7 @@ struct TemporaryFile
 
         unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
         std::mt19937 rg{seed1};
-        std::uniform_int_distribution<std::string::size_type> pick(
-            0, sizeof(chrs) - 2);
+        std::uniform_int_distribution<std::string::size_type> pick(0, sizeof(chrs) - 2);
 
         std::string s;
 
