@@ -15,7 +15,7 @@
 #include <filesystem>
 #include <iomanip>
 #include <numeric>
-#include <ofstream>
+#include <fstream>
 #include <random>
 #include <vector>
 
