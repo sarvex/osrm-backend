@@ -1,6 +1,7 @@
 #ifndef UNIT_TESTS_TEMPORARY_FILE_HPP
 #define UNIT_TESTS_TEMPORARY_FILE_HPP
 
+#include <chrono>
 #include <filesystem>
 #include <random>
 #include <string>
@@ -21,8 +22,9 @@ struct TemporaryFile
                             "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-        thread_local static std::mt19937 rg{std::random_device{}()};
-        thread_local static std::uniform_int_distribution<std::string::size_type> pick(
+        unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+        std::mt19937 rg{seed1};
+        std::uniform_int_distribution<std::string::size_type> pick(
             0, sizeof(chrs) - 2);
 
         std::string s;
