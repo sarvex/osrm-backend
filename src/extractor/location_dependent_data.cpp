@@ -7,8 +7,8 @@
 #include <rapidjson/error/en.h>
 #include <rapidjson/istreamwrapper.h>
 
-#include <boost/function_output_iterator.hpp>
 #include <boost/geometry/algorithms/equals.hpp>
+#include <boost/iterator/function_output_iterator.hpp>
 
 #include <filesystem>
 #include <fstream>
