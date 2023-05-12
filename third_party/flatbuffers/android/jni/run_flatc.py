@@ -31,8 +31,7 @@ def main():
   flatc = ''
   flatbuffers_dir = sys.argv[1]
   for path in FLATC_SEARCH_PATHS:
-    current = os.path.join(flatbuffers_dir, path,
-                           'flatc' + EXECUTABLE_EXTENSION)
+    current = os.path.join(flatbuffers_dir, path, f'flatc{EXECUTABLE_EXTENSION}')
     if os.path.exists(current):
       flatc = current
       break

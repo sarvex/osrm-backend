@@ -96,9 +96,7 @@ class MonsterExtra(object):
     # MonsterExtra
     def DvecLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(20))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # MonsterExtra
     def Fvec(self, j):
@@ -118,9 +116,7 @@ class MonsterExtra(object):
     # MonsterExtra
     def FvecLength(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(22))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
 def MonsterExtraStart(builder): builder.StartObject(10)
 def MonsterExtraAddD0(builder, d0): builder.PrependFloat64Slot(0, d0, float('nan'))

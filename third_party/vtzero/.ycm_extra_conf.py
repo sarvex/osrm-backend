@@ -14,30 +14,22 @@ basedir = dirname(realpath(__file__))
 # for more information install clang-3.2-doc package and
 # check UsersManual.html
 flags = [
-'-Werror',
-'-Wall',
-'-Wextra',
-'-pedantic',
-'-Wno-return-type',
-'-Wno-unused-parameter',
-'-Wno-unused-variable',
-
-'-std=c++11',
-
-# '-x' and 'c++' also required
-# use 'c' for C projects
-'-x',
-'c++',
-
-# workaround for https://github.com/Valloric/YouCompleteMe/issues/303
-# also see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=800618
-'-isystem',
-'/usr/lib/ycmd/clang_includes/',
-
-'-I%s/../protozero/include' % basedir,
-'-I%s/include' % basedir,
-'-I%s/test/include' % basedir,
-'-I%s/test/catch' % basedir,
+    '-Werror',
+    '-Wall',
+    '-Wextra',
+    '-pedantic',
+    '-Wno-return-type',
+    '-Wno-unused-parameter',
+    '-Wno-unused-variable',
+    '-std=c++11',
+    '-x',
+    'c++',
+    '-isystem',
+    '/usr/lib/ycmd/clang_includes/',
+    f'-I{basedir}/../protozero/include',
+    f'-I{basedir}/include',
+    f'-I{basedir}/test/include',
+    f'-I{basedir}/test/catch',
 ]
 
 # youcompleteme is calling this function to get flags

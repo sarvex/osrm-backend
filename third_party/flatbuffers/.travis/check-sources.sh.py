@@ -22,9 +22,9 @@ def check_encoding(encoding, scan_dir, regex_pattern):
         LF = btext.count(b'\n')
         CR = btext.count(b'\r')
         if CR!=0:
-          raise ValueError("invalid line endings: LF({})/CR({})".format(LF, CR))
+          raise ValueError(f"invalid line endings: LF({LF})/CR({CR})")
   except Exception as err:
-    print("ERROR with [{}]: {}".format(fname, err))
+    print(f"ERROR with [{fname}]: {err}")
     return -1
   else:
     return 0

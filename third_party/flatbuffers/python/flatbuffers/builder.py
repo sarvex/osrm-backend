@@ -302,7 +302,7 @@ class Builder(object):
 
     def Pad(self, n):
         """Pad places zeros at the current offset."""
-        for i in range_func(n):
+        for _ in range_func(n):
             self.Place(0, N.Uint8Flags)
 
     def Prep(self, size, additionalBytes):
@@ -453,11 +453,7 @@ class Builder(object):
         self.StartVector(x.itemsize, x.size, x.dtype.alignment)
 
         # Ensure little endian byte ordering
-        if x.dtype.str[0] == "<":
-            x_lend = x
-        else:
-            x_lend = x.byteswap(inplace=False)
-
+        x_lend = x if x.dtype.str[0] == "<" else x.byteswap(inplace=False)
         # Calculate total length
         l = UOffsetTFlags.py_type(x_lend.itemsize * x_lend.size)
         ## @cond FLATBUFFERS_INTERNAL
@@ -466,7 +462,7 @@ class Builder(object):
 
         # tobytes ensures c_contiguous ordering
         self.Bytes[self.Head():self.Head()+l] = x_lend.tobytes(order='C')
-        
+
         return self.EndVector(x.size)
 
     ## @cond FLATBUFFERS_INTERNAL
@@ -744,9 +740,7 @@ def vtableEqual(a, objectStart, b):
         x = encode.Get(packer.voffset, b, i * N.VOffsetTFlags.bytewidth)
 
         # Skip vtable entries that indicate a default value.
-        if x == 0 and elem == 0:
-            pass
-        else:
+        if x != 0 or elem != 0:
             y = objectStart - elem
             if x != y:
                 return False

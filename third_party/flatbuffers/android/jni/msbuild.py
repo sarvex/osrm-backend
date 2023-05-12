@@ -50,10 +50,8 @@ def compare_version(a, b):
   """
   aa = string.split(a, ".")
   bb = string.split(b, ".")
-  for i in range(0, 4):
-    if aa[i] != bb[i]:
-      return cmp(int(aa[i]), int(bb[i]))
-  return 0
+  return next(
+      (cmp(int(aa[i]), int(bb[i])) for i in range(0, 4) if aa[i] != bb[i]), 0)
 
 def main():
   msbuilds = []

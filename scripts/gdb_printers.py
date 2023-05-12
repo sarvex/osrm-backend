@@ -11,7 +11,7 @@ def call(this, method, *args):
     """Call this.method(args)"""
     if (str(this) == '<optimized out>'):
         raise BaseException('"this" is optimized out')
-    command = '(*({})({})).{}({})'.format(this.type.target().pointer(), this.address, method, ','.join((str(x) for x in args)))
+    command = f"(*({this.type.target().pointer()})({this.address})).{method}({','.join(str(x) for x in args)})"
     return gdb.parse_and_eval(command)
 
 def iterate(v):
@@ -106,22 +106,31 @@ class GeojsonPrinter (gdb.Command):
             ll = lonlat(location)
             road.append(ll)
 
-            properties= {field.name: str(step[field.name]) for field in step.type.fields() if str(step[field.name]) != '""'}
-            properties.update({'maneuver.' + field.name: str(maneuver[field.name]) for field in maneuver.type.fields()})
-            properties.update({'stroke': '#0000ff', 'stroke-opacity': 0.8, 'stroke-width': 15})
+            properties = (
+                {
+                    field.name: str(step[field.name])
+                    for field in step.type.fields()
+                    if str(step[field.name]) != '""'
+                }
+                | {
+                    f'maneuver.{field.name}': str(maneuver[field.name])
+                    for field in maneuver.type.fields()
+                }
+                | {'stroke': '#0000ff', 'stroke-opacity': 0.8, 'stroke-width': 15}
+            )
             result.append(geojson.Feature(geometry=geojson.LineString([ll, ll]), properties=properties))
 
         road = geojson.Feature(geometry=geojson.LineString(road), properties={'stroke': '#0000ff', 'stroke-opacity': 0.5, 'stroke-width':5})
         return [road, *result]
 
-    def invoke (self, arg, from_tty):
+    def invoke(self, arg, from_tty):
         try:
             val = gdb.parse_and_eval(arg)
             features = self.to_geojson[str(val.type)](val)
             request = self.encodeURIComponent(str(geojson.FeatureCollection(features)))
-            webbrowser.open('http://geojson.io/#data=data:application/json,' + request)
+            webbrowser.open(f'http://geojson.io/#data=data:application/json,{request}')
         except KeyError as e:
-            print ('no GeoJSON printer for: ' + str(e))
+            print(f'no GeoJSON printer for: {str(e)}')
         except gdb.error as e:
             print('error: ' % (e.args[0] if len(e.args)>0 else 'unspecified'))
             return
@@ -192,8 +201,8 @@ class SVGPrinter (gdb.Command):
         fd, name = tempfile.mkstemp('.html')
         os.write(fd, svg.encode('utf-8'))
         os.close(fd)
-        print ('Saved to ' + name)
-        webbrowser.open('file://' + name)
+        print(f'Saved to {name}')
+        webbrowser.open(f'file://{name}')
 
     @staticmethod
     def getByGeometryId(facade, id, value):

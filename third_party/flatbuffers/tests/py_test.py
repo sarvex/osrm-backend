@@ -69,18 +69,12 @@ class TestWireFormat(unittest.TestCase):
                 gen_buf, gen_off = make_monster_from_generated_code(sizePrefix=sizePrefix, file_identifier=file_identifier)
                 CheckReadBuffer(gen_buf, gen_off, sizePrefix=sizePrefix, file_identifier=file_identifier)
 
-        # Verify that the canonical flatbuffer file is readable by the
-        # generated Python code. Note that context managers are not part of
-        # Python 2.5, so we use the simpler open/close methods here:
-        f = open('monsterdata_test.mon', 'rb')
-        canonicalWireData = f.read()
-        f.close()
+        with open('monsterdata_test.mon', 'rb') as f:
+            canonicalWireData = f.read()
         CheckReadBuffer(bytearray(canonicalWireData), 0, file_identifier=b'MONS')
 
-        # Write the generated buffer out to a file:
-        f = open('monsterdata_python_wire.mon', 'wb')
-        f.write(gen_buf[gen_off:])
-        f.close()
+        with open('monsterdata_python_wire.mon', 'wb') as f:
+            f.write(gen_buf[gen_off:])
 
 
 def CheckReadBuffer(buf, offset, sizePrefix=False, file_identifier=None):
@@ -295,7 +289,7 @@ class TestFuzz(unittest.TestCase):
         stats = defaultdict(int)
         def check(table, desc, want, got):
             stats[desc] += 1
-            self.assertEqual(want, got, "%s != %s, %s" % (want, got, desc))
+            self.assertEqual(want, got, f"{want} != {got}, {desc}")
 
         l = LCG()  # Reset.
 
@@ -350,8 +344,11 @@ class TestFuzz(unittest.TestCase):
                     raise RuntimeError('unreachable')
 
         # If enough checks were made, verify that all scalar types were used:
-        self.assertEqual(testValuesMax, len(stats),
-                "fuzzing failed to test all scalar types: %s" % stats)
+        self.assertEqual(
+            testValuesMax,
+            len(stats),
+            f"fuzzing failed to test all scalar types: {stats}",
+        )
 
 
 class TestByteLayout(unittest.TestCase):
@@ -359,9 +356,7 @@ class TestByteLayout(unittest.TestCase):
 
     def assertBuilderEquals(self, builder, want_chars_or_ints):
         def integerize(x):
-            if isinstance(x, compat.string_types):
-                return ord(x)
-            return x
+            return ord(x) if isinstance(x, compat.string_types) else x
 
         want_ints = list(map(integerize, want_chars_or_ints))
         want = bytearray(want_ints)
@@ -1611,14 +1606,10 @@ def CheckAgainstGoldDataGo():
             print('Go-generated data does not exist, failed.')
             return False
 
-        # would like to use a context manager here, but it's less
-        # backwards-compatible:
-        f = open(fn, 'rb')
-        go_wire_data = f.read()
-        f.close()
-
+        with open(fn, 'rb') as f:
+            go_wire_data = f.read()
         CheckReadBuffer(bytearray(go_wire_data), 0)
-        if not bytearray(gen_buf[gen_off:]) == bytearray(go_wire_data):
+        if bytearray(gen_buf[gen_off:]) != bytearray(go_wire_data):
             raise AssertionError('CheckAgainstGoldDataGo failed')
     except:
         print('Failed to test against Go-generated test data.')
@@ -1635,10 +1626,8 @@ def CheckAgainstGoldDataJava():
         if not os.path.exists(fn):
             print('Java-generated data does not exist, failed.')
             return False
-        f = open(fn, 'rb')
-        java_wire_data = f.read()
-        f.close()
-
+        with open(fn, 'rb') as f:
+            java_wire_data = f.read()
         CheckReadBuffer(bytearray(java_wire_data), 0)
     except:
         print('Failed to read Java-generated test data.')
@@ -1759,7 +1748,7 @@ def backward_compatible_run_tests(**kwargs):
         try:
             unittest.main(**kwargs)
         except SystemExit as e:
-            if not e.code == 0:
+            if e.code != 0:
                 return False
         return True
 
@@ -1767,24 +1756,21 @@ def backward_compatible_run_tests(**kwargs):
     kwargs['exit'] = False
     kwargs['verbosity'] = 0
     ret = unittest.main(**kwargs)
-    if ret.result.errors or ret.result.failures:
-        return False
-
-    return True
+    return not ret.result.errors and not ret.result.failures
 
 def main():
     import os
     import sys
-    if not len(sys.argv) == 4:
-       sys.stderr.write('Usage: %s <benchmark vtable count>'
-                        '<benchmark read count> <benchmark build count>\n'
-                        % sys.argv[0])
-       sys.stderr.write('       Provide COMPARE_GENERATED_TO_GO=1   to check'
-                        'for bytewise comparison to Go data.\n')
-       sys.stderr.write('       Provide COMPARE_GENERATED_TO_JAVA=1 to check'
-                        'for bytewise comparison to Java data.\n')
-       sys.stderr.flush()
-       sys.exit(1)
+    if len(sys.argv) != 4:
+        sys.stderr.write('Usage: %s <benchmark vtable count>'
+                         '<benchmark read count> <benchmark build count>\n'
+                         % sys.argv[0])
+        sys.stderr.write('       Provide COMPARE_GENERATED_TO_GO=1   to check'
+                         'for bytewise comparison to Go data.\n')
+        sys.stderr.write('       Provide COMPARE_GENERATED_TO_JAVA=1 to check'
+                         'for bytewise comparison to Java data.\n')
+        sys.stderr.flush()
+        sys.exit(1)
 
     kwargs = dict(argv=sys.argv[:-3])
 
@@ -1800,16 +1786,12 @@ def main():
         sys.stderr.flush()
         sys.exit(1)
 
-    # run benchmarks (if 0, they will be a noop):
-    bench_vtable = int(sys.argv[1])
-    bench_traverse = int(sys.argv[2])
-    bench_build = int(sys.argv[3])
-    if bench_vtable:
+    if bench_vtable := int(sys.argv[1]):
         BenchmarkVtableDeduplication(bench_vtable)
-    if bench_traverse:
+    if bench_traverse := int(sys.argv[2]):
         buf, off = make_monster_from_generated_code()
         BenchmarkCheckReadBuffer(bench_traverse, buf, off)
-    if bench_build:
+    if bench_build := int(sys.argv[3]):
         buf, off = make_monster_from_generated_code()
         BenchmarkMakeMonsterFromGeneratedCode(bench_build, len(buf))
 

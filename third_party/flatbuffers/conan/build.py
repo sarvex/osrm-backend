@@ -39,14 +39,13 @@ def get_version():
         if os.getenv("APPVEYOR_REPO_TAG") == "true":
             version = os.getenv("APPVEYOR_REPO_TAG_NAME")
 
-    match = re.search(r"v(\d+\.\d+\.\d+.*)", version)
-    if match:
-        return match.group(1)
+    if match := re.search(r"v(\d+\.\d+\.\d+.*)", version):
+        return match[1]
     return version
 
 
 def get_reference(username):
-    return "flatbuffers/{}@google/stable".format(get_version())
+    return f"flatbuffers/{get_version()}@google/stable"
 
 
 if __name__ == "__main__":

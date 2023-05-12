@@ -110,9 +110,7 @@ class TypeAliases(object):
     # TypeAliases
     def V8Length(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(24))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
     # TypeAliases
     def Vf64(self, j):
@@ -132,9 +130,7 @@ class TypeAliases(object):
     # TypeAliases
     def Vf64Length(self):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(26))
-        if o != 0:
-            return self._tab.VectorLen(o)
-        return 0
+        return self._tab.VectorLen(o) if o != 0 else 0
 
 def TypeAliasesStart(builder): builder.StartObject(12)
 def TypeAliasesAddI8(builder, i8): builder.PrependInt8Slot(0, i8, 0)

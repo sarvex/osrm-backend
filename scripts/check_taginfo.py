@@ -4,7 +4,7 @@ import json
 import sys
 import re
 
-WHITELIST = set(["mph"])
+WHITELIST = {"mph"}
 
 if len(sys.argv) < 3:
     print("Not enough arguments.\nUsage: " + sys.argv[0] + " taginfo.json profile.lua")

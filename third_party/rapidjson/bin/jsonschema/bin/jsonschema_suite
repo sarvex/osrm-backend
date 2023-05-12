@@ -88,8 +88,7 @@ def files(paths):
 
 def groups(paths):
     for test_file in files(paths):
-        for group in test_file:
-            yield group
+        yield from test_file
 
 
 def cases(paths):
@@ -108,9 +107,9 @@ def collect(root_dir):
 class SanityTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        print("Looking for tests in %s" % SUITE_ROOT_DIR)
+        print(f"Looking for tests in {SUITE_ROOT_DIR}")
         cls.test_files = list(collect(SUITE_ROOT_DIR))
-        print("Found %s test files" % len(cls.test_files))
+        print(f"Found {len(cls.test_files)} test files")
         assert cls.test_files, "Didn't find the test files!"
 
     def test_all_files_are_valid_json(self):
@@ -119,7 +118,7 @@ class SanityTests(unittest.TestCase):
                 try:
                     json.load(test_file)
                 except ValueError as error:
-                    self.fail("%s contains invalid JSON (%s)" % (path, error))
+                    self.fail(f"{path} contains invalid JSON ({error})")
 
     def test_all_descriptions_have_reasonable_length(self):
         for case in cases(self.test_files):
@@ -132,7 +131,7 @@ class SanityTests(unittest.TestCase):
 
     def test_all_descriptions_are_unique(self):
         for group in groups(self.test_files):
-            descriptions = set(test["description"] for test in group["tests"])
+            descriptions = {test["description"] for test in group["tests"]}
             self.assertEqual(
                 len(descriptions),
                 len(group["tests"]),
@@ -149,10 +148,9 @@ class SanityTests(unittest.TestCase):
                     try:
                         schema_validator.check_schema(case["schema"])
                     except jsonschema.SchemaError as error:
-                        self.fail("%s contains an invalid schema (%s)" %
-                                  (case, error))
+                        self.fail(f"{case} contains an invalid schema ({error})")
             else:
-                warnings.warn("No schema validator for %s" % schema)
+                warnings.warn(f"No schema validator for {schema}")
 
     @unittest.skipIf(jsonschema is None, "Validation library not present!")
     def test_suites_are_valid(self):
@@ -176,7 +174,7 @@ def main(arguments):
         result = unittest.TextTestRunner(verbosity=2).run(suite)
         sys.exit(not result.wasSuccessful())
     elif arguments.command == "flatten":
-        selected_cases = [case for case in cases(collect(arguments.version))]
+        selected_cases = list(cases(collect(arguments.version)))
 
         if arguments.randomize:
             random.shuffle(selected_cases)
@@ -192,7 +190,7 @@ def main(arguments):
             os.makedirs(arguments.out_dir)
         except OSError as e:
             if e.errno == errno.EEXIST:
-                print("%s already exists. Aborting." % arguments.out_dir)
+                print(f"{arguments.out_dir} already exists. Aborting.")
                 sys.exit(1)
             raise
 
